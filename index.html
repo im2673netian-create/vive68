@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>나의 취미생활 달력</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #f5f1ee;
+  font-family: Arial, "Noto Sans KR", sans-serif;
+  color: #403934;
+}
+
+.app {
+  max-width: 760px;
+  margin: auto;
+  min-height: 100vh;
+  background: #fff;
+}
+
+/* 상단 */
+.header {
+  background: linear-gradient(135deg, #9b7b6c, #c8a99a);
+  color: white;
+  padding: 22px 18px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.header p {
+  margin: 7px 0 0;
+  font-size: 13px;
+}
+
+/* 메뉴 */
+.menu {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  padding: 10px;
+  background: #faf7f5;
+}
+
+.menu button {
+  border: none;
+  padding: 12px 5px;
+  border-radius: 10px;
+  background: #eadfd9;
+  color: #604d43;
+  font-weight: bold;
+}
+
+.menu button.active {
+  background: #8d6e61;
+  color: white;
+}
+
+/* 화면 */
+.page {
+  display: none;
+  padding: 14px;
+}
+
+.page.active {
+  display: block;
+}
+
+/* 달력 */
+.calendar-card {
+  border: 1px solid #eadfd9;
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: 0 3px 12px #0000000a;
+}
+
+.month-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.month-bar button {
+  border: none;
+  background: #eee4df;
+  border-radius: 8px;
+  padding: 8px 13px;
+  font-size: 18px;
+}
+
+.month-title {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.weekdays,
+.calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.weekdays div {
+  text-align: center;
+  font-size: 12px;
+  font-weight: bold;
+  color: #88766d;
+  padding: 8px 0;
+}
+
+.day {
+  min-height: 82px;
+  border: 1px solid #eee8e4;
+  padding: 5px;
+  cursor: pointer;
+  position: relative;
+}
+
+.day:hover {
+  background: #fff8f4;
+}
+
+.day-number {
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.today {
+  background: #fff1e9;
+  border: 2px solid #c9947a;
+}
+
+.event {
+  margin-top: 5px;
+  padding: 3px 4px;
+  border-radius: 5px;
+  font-size: 10px;
+  line-height: 1.3;
+}
+
+.calli {
+  background: #f7d9e2;
+  color: #884b61;
+}
+
+.choir {
+  background: #d8eadc;
+  color: #42704c;
+}
+
+.main-event {
+  background: #e4d8f3;
+  color: #60457c;
+}
+
+/* 입력 */
+.card {
+  background: white;
+  border: 1px solid #e8ded8;
+  border-radius: 15px;
+  padding: 15px;
+  margin-bottom: 14px;
+}
+
+.card h2 {
+  font-size: 17px;
+  margin: 0 0 12px;
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 11px;
+  margin: 5px 0;
+  border: 1px solid #ddd2cc;
+  border-radius: 9px;
+  font-size: 14px;
+}
+
+textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.save-btn {
+  width: 100%;
+  margin-top: 8px;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: #8d6e61;
+  color: white;
+  font-weight: bold;
+}
+
+/* 선택 날짜 */
+.selected-date {
+  color: #8d6e61;
+  font-weight: bold;
+}
+
+/* 표 */
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 550px;
+}
+
+th,
+td {
+  border-bottom: 1px solid #eee5e0;
+  padding: 10px 7px;
+  text-align: center;
+  font-size: 13px;
+}
+
+th {
+  background: #f1e8e3;
+}
+
+.delete {
+  border: none;
+  background: #eee2dc;
+  color: #654d43;
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+
+.empty {
+  text-align: center;
+  padding: 25px;
+  color: #999;
+}
+
+.legend {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  font-size: 12px;
+}
+
+.legend span {
+  padding: 6px 9px;
+  border-radius: 8px;
+}
+
+footer {
+  padding: 25px;
+  text-align: center;
+  color: #aaa;
+  font-size: 11px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header class="header">
+  <h1>🌷 나의 취미생활</h1>
+  <p>캘리그라피 · 합창 · 행사 · 기록</p>
+</header>
+
+<nav class="menu">
+  <button class="active" onclick="openPage('calendar', this)">📅 달력</button>
+  <button onclick="openPage('record', this)">📝 기록</button>
+  <button onclick="openPage('events', this)">📌 행사</button>
+</nav>
+
+
+<!-- ================= 달력 ================= -->
+
+<section id="calendar" class="page active">
+
+  <div class="calendar-card">
+
+    <div class="month-bar">
+
+      <button onclick="changeMonth(-1)">‹</button>
+
+      <div class="month-title" id="monthTitle"></div>
+
+      <button onclick="changeMonth(1)">›</button>
+
+    </div>
+
+    <div class="weekdays">
+      <div>일</div>
+      <div>월</div>
+      <div>화</div>
+      <div>수</div>
+      <div>목</div>
+      <div>금</div>
+      <div>토</div>
+    </div>
+
+    <div class="calendar" id="calendar"></div>
+
+    <div class="legend">
+      <span class="calli">✍️ 화요일 캘리그라피</span>
+      <span class="choir">🎶 목요일 합창</span>
+      <span class="main-event">📌 주요 행사</span>
+    </div>
+
+  </div>
+
+  <div class="card" style="margin-top:14px">
+
+    <h2>📅 선택한 날짜</h2>
+
+    <div id="selectedDate" class="selected-date">
+      날짜를 선택하세요.
+    </div>
+
+    <div id="selectedEvents" style="margin-top:10px">
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ================= 기록 ================= -->
+
+<section id="record" class="page">
+
+  <div class="card">
+
+    <h2>📝 날짜별 기록</h2>
+
+    <input id="recordDate" type="date">
+
+    <textarea
+      id="recordText"
+      placeholder="오늘의 취미 활동을 기록하세요.
+예: 캘리그라피 연습 1시간
+예: 합창 연습곡 복습">
+    </textarea>
+
+    <button class="save-btn" onclick="saveRecord()">
+      기록 저장
+    </button>
+
+  </div>
+
+
+  <div class="card">
+
+    <h2>📋 기록표</h2>
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>날짜</th>
+            <th>기록 내용</th>
+            <th>관리</th>
+          </tr>
+        </thead>
+
+        <tbody id="recordTable"></tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ================= 행사 ================= -->
+
+<section id="events" class="page">
+
+  <div class="card">
+
+    <h2>📌 주요 행사 등록</h2>
+
+    <input id="eventDate" type="date">
+
+    <input
+      id="eventName"
+      placeholder="행사 이름">
+
+    <input
+      id="eventPlace"
+      placeholder="장소">
+
+    <button class="save-btn" onclick="saveEvent()">
+      행사 저장
+    </button>
+
+  </div>
+
+
+  <div class="card">
+
+    <h2>📋 주요 행사 일정표</h2>
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>날짜</th>
+            <th>행사</th>
+            <th>장소</th>
+            <th>관리</th>
+          </tr>
+        </thead>
+
+        <tbody id="eventTable"></tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<footer>
+  나의 취미생활 기록 앱
+</footer>
+
+</div>
+
+
+<script>
+
+/* ===============================
+   기본 데이터
+================================ */
+
+let currentDate = new Date();
+
+let records =
+  JSON.parse(localStorage.getItem("records") || "[]");
+
+let events =
+  JSON.parse(localStorage.getItem("events") || "[]");
+
+
+/* ===============================
+   화면 이동
+================================ */
+
+function openPage(page, button) {
+
+  document
+    .querySelectorAll(".page")
+    .forEach(p => p.classList.remove("active"));
+
+  document
+    .getElementById(page)
+    .classList.add("active");
+
+  document
+    .querySelectorAll(".menu button")
+    .forEach(b => b.classList.remove("active"));
+
+  button.classList.add("active");
+
+}
+
+
+/* ===============================
+   달력
+================================ */
+
+function drawCalendar() {
+
+  const year = currentDate.getFullYear();
+
+  const month = currentDate.getMonth();
+
+  document.getElementById("monthTitle").innerText =
+    `${year}년 ${month + 1}월`;
+
+
+  const calendar =
+    document.getElementById("calendar");
+
+  calendar.innerHTML = "";
+
+
+  const firstDay =
+    new Date(year, month, 1).getDay();
+
+  const lastDate =
+    new Date(year, month + 1, 0).getDate();
+
+
+  /* 빈칸 */
+
+  for (let i = 0; i < firstDay; i++) {
+
+    const empty = document.createElement("div");
+
+    empty.className = "day";
+
+    calendar.appendChild(empty);
+
+  }
+
+
+  /* 날짜 */
+
+  for (let day = 1; day <= lastDate; day++) {
+
+    const date =
+      new Date(year, month, day);
+
+    const cell =
+      document.createElement("div");
+
+    cell.className = "day";
+
+
+    const dateString =
+      `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+
+
+    const number =
+      document.createElement("div");
+
+    number.className = "day-number";
+
+    number.innerText = day;
+
+    cell.appendChild(number);
+
+
+    /* 오늘 */
+
+    const today = new Date();
+
+    if (
+      today.getFullYear() === year &&
+      today.getMonth() === month &&
+      today.getDate() === day
+    ) {
+
+      cell.classList.add("today");
+
+    }
+
+
+    /*
+      화요일 = 2
+      목요일 = 4
+    */
+
+    if (date.getDay() === 2) {
+
+      addEventLabel(
+        cell,
+        "✍️ 캘리그라피",
+        "calli"
+      );
+
+    }
+
+
+    if (date.getDay() === 4) {
+
+      addEventLabel(
+        cell,
+        "🎶 합창",
+        "choir"
+      );
+
+    }
+
+
+    /* 저장된 행사 */
+
+    events
+      .filter(e => e.date === dateString)
+      .forEach(e => {
+
+        addEventLabel(
+          cell,
+          "📌 " + e.name,
+          "main-event"
+        );
+
+      });
+
+
+    cell.onclick = function() {
+
+      selectDate(dateString);
+
+    };
+
+
+    calendar.appendChild(cell);
+
+  }
+
+}
+
+
+function addEventLabel(cell, text, className) {
+
+  const div =
+    document.createElement("div");
+
+  div.className =
+    "event " + className;
+
+  div.innerText = text;
+
+  cell.appendChild(div);
+
+}
+
+
+/* ===============================
+   월 이동
+================================ */
+
+function changeMonth(amount) {
+
+  currentDate.setMonth(
+    currentDate.getMonth() + amount
+  );
+
+  drawCalendar();
+
+}
+
+
+/* ===============================
+   날짜 선택
+================================ */
+
+function selectDate(date) {
+
+  document.getElementById("selectedDate")
+    .innerText = date;
+
+
+  let html = "";
+
+
+  const d =
+    new Date(date + "T00:00:00");
+
+
+  /* 자동 일정 */
+
+  if (d.getDay() === 2) {
+
+    html += `
+      <div class="event calli">
+        ✍️ 매주 화요일 · 캘리그라피
+      </div>
+    `;
+
+  }
+
+
+  if (d.getDay() === 4) {
+
+    html += `
+      <div class="event choir">
+        🎶 매주 목요일 · 합창
+      </div>
+    `;
+
+  }
+
+
+  /* 행사 */
+
+  events
+    .filter(e => e.date === date)
+    .forEach(e => {
+
+      html += `
+        <div class="event main-event">
+          📌 ${escapeHtml(e.name)}
+          ${e.place ? " · " + escapeHtml(e.place) : ""}
+        </div>
+      `;
+
+    });
+
+
+  /* 기록 */
+
+  records
+    .filter(r => r.date === date)
+    .forEach(r => {
+
+      html += `
+        <div class="event">
+          📝 ${escapeHtml(r.text)}
+        </div>
+      `;
+
+    });
+
+
+  if (!html) {
+
+    html =
+      `<div class="empty">등록된 일정과 기록이 없습니다.</div>`;
+
+  }
+
+
+  document.getElementById("selectedEvents")
+    .innerHTML = html;
+
+}
+
+
+/* ===============================
+   기록 저장
+================================ */
+
+function saveRecord() {
+
+  const date =
+    document.getElementById("recordDate").value;
+
+  const text =
+    document.getElementById("recordText").value.trim();
+
+
+  if (!date || !text) {
+
+    alert("날짜와 내용을 입력해주세요.");
+
+    return;
+
+  }
+
+
+  records.unshift({
+    date: date,
+    text: text
+  });
+
+
+  localStorage.setItem(
+    "records",
+    JSON.stringify(records)
+  );
+
+
+  document.getElementById("recordText").value = "";
+
+  renderRecords();
+
+  drawCalendar();
+
+  alert("기록이 저장되었습니다.");
+
+}
+
+
+/* ===============================
+   행사 저장
+================================ */
+
+function saveEvent() {
+
+  const date =
+    document.getElementById("eventDate").value;
+
+  const name =
+    document.getElementById("eventName").value.trim();
+
+  const place =
+    document.getElementById("eventPlace").value.trim();
+
+
+  if (!date || !name) {
+
+    alert("날짜와 행사 이름을 입력해주세요.");
+
+    return;
+
+  }
+
+
+  events.push({
+    date: date,
+    name: name,
+    place: place
+  });
+
+
+  localStorage.setItem(
+    "events",
+    JSON.stringify(events)
+  );
+
+
+  document.getElementById("eventName").value = "";
+
+  document.getElementById("eventPlace").value = "";
+
+
+  renderEvents();
+
+  drawCalendar();
+
+  alert("행사가 저장되었습니다.");
+
+}
+
+
+/* ===============================
+   기록표
+================================ */
+
+function renderRecords() {
+
+  const table =
+    document.getElementById("recordTable");
+
+
+  if (records.length === 0) {
+
+    table.innerHTML = `
+      <tr>
+        <td colspan="3" class="empty">
+          아직 기록이 없습니다.
+        </td>
+      </tr>
+    `;
+
+    return;
+
+  }
+
+
+  table.innerHTML =
+    records.map((r, i) => `
+
+      <tr>
+
+        <td>${escapeHtml(r.date)}</td>
+
+        <td style="text-align:left">
+          ${escapeHtml(r.text)}
+        </td>
+
+        <td>
+          <button
+            class="delete"
+            onclick="deleteRecord(${i})">
+            삭제
+          </button>
+        </td>
+
+      </tr>
+
+    `).join("");
+
+}
+
+
+/* ===============================
+   행사표
+================================ */
+
+function renderEvents() {
+
+  const table =
+    document.getElementById("eventTable");
+
+
+  if (events.length === 0) {
+
+    table.innerHTML = `
+      <tr>
+        <td colspan="4" class="empty">
+          등록된 행사가 없습니다.
+        </td>
+      </tr>
+    `;
+
+    return;
+
+  }
+
+
+  table.innerHTML =
+    events.map((e, i) => `
+
+      <tr>
+
+        <td>${escapeHtml(e.date)}</td>
+
+        <td>${escapeHtml(e.name)}</td>
+
+        <td>${escapeHtml(e.place || "-")}</td>
+
+        <td>
+          <button
+            class="delete"
+            onclick="deleteEvent(${i})">
+            삭제
+          </button>
+        </td>
+
+      </tr>
+
+    `).join("");
+
+}
+
+
+/* ===============================
+   삭제
+================================ */
+
+function deleteRecord(index) {
+
+  if (!confirm("이 기록을 삭제할까요?")) return;
+
+  records.splice(index, 1);
+
+  localStorage.setItem(
+    "records",
+    JSON.stringify(records)
+  );
+
+  renderRecords();
+
+  drawCalendar();
+
+}
+
+
+function deleteEvent(index) {
+
+  if (!confirm("이 행사를 삭제할까요?")) return;
+
+  events.splice(index, 1);
+
+  localStorage.setItem(
+    "events",
+    JSON.stringify(events)
+  );
+
+  renderEvents();
+
+  drawCalendar();
+
+}
+
+
+/* ===============================
+   HTML 안전 처리
+================================ */
+
+function escapeHtml(text) {
+
+  return String(text)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+
+
+/* ===============================
+   초기 실행
+================================ */
+
+drawCalendar();
+
+renderRecords();
+
+renderEvents();
+
+</script>
+
+</body>
+</html>
